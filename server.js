@@ -1,0 +1,35 @@
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const connectDB = require("./config/db");
+const { errorHandler } = require("./middleware/errorHandler");
+
+dotenv.config();
+connectDB();
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/movies", require("./routes/movieRoutes"));
+app.use("/api/favorites", require("./routes/favoriteRoutes"));
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
+
+// default route
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Welcome to CINESCOPE API" });
+});
+
+// error handler
+app.use(errorHandler);
+
+// server start
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+});
