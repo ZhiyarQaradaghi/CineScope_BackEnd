@@ -328,6 +328,68 @@ const getGenres = async () => {
   }
 };
 
+const discoverMovies = async (page = 1, params = {}) => {
+  try {
+    const validPage = validatePage(page);
+
+    const response = await tmdbApi.get("/discover/movie", {
+      params: {
+        page: validPage,
+        ...params,
+      },
+    });
+
+    return {
+      results: response.data.results,
+      page: response.data.page,
+      total_pages: Math.min(500, response.data.total_pages),
+      total_results: response.data.total_results,
+    };
+  } catch (error) {
+    console.error("Error discovering movies:", error);
+    throw new Error(error.message || "Failed to discover movies");
+  }
+};
+
+const getTrendingMovies = async (
+  timeWindow = "week",
+  page = 1,
+  params = {}
+) => {
+  try {
+    const validPage = validatePage(page);
+    // (only 'day' or 'week' are valid)
+    const validTimeWindow = ["day", "week"].includes(timeWindow)
+      ? timeWindow
+      : "week";
+
+    if (validTimeWindow !== timeWindow) {
+      console.warn(
+        `Invalid time window: ${timeWindow}. Using ${validTimeWindow} instead.`
+      );
+    }
+
+    const response = await tmdbApi.get(`/trending/movie/${validTimeWindow}`, {
+      params: {
+        page: validPage,
+        ...params,
+      },
+    });
+
+    return {
+      results: response.data.results,
+      page: response.data.page,
+      total_pages: Math.min(500, response.data.total_pages),
+      total_results: response.data.total_results,
+    };
+  } catch (error) {
+    console.error(`Error fetching trending movies for ${timeWindow}:`, error);
+    throw new Error(
+      error.message || `Failed to fetch trending movies for ${timeWindow}`
+    );
+  }
+};
+
 module.exports = {
   getPopularMovies,
   getTopRatedMovies,
@@ -335,4 +397,6 @@ module.exports = {
   searchMovies,
   getMovieDetails,
   getGenres,
+  discoverMovies,
+  getTrendingMovies,
 };

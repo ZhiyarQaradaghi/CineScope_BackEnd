@@ -1,11 +1,14 @@
 This is the back end for the CineScope project.
 
 Features:
+
 - User authentication
 - Movie search
 - Movie details
 - Movie favorites
 - Movie filters
+- Discover movies by genre
+- Trending movies
 
 ## Setup
 
@@ -14,8 +17,9 @@ Features:
 3. Start the server
 
 Dependencies:
+
 - Node.js
 - Express
 - MongoDB
 - Mongoose
-- JSON Web Token 
+- JSON Web Token

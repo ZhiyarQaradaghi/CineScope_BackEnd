@@ -166,6 +166,57 @@ const getGenres = async (req, res) => {
   }
 };
 
+// @desc    Discover movies by genre and other filters
+// @route   GET /api/movies/discover
+// @access  Public
+const discoverMovies = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const additionalParams = extractTMDBParams(req.query);
+
+    const data = await tmdbService.discoverMovies(page, additionalParams);
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Error in discoverMovies controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to discover movies",
+    });
+  }
+};
+
+// @desc    Get trending movies
+// @route   GET /api/movies/trending
+// @access  Public
+const getTrendingMovies = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const timeWindow = req.query.time_window || "week";
+    const additionalParams = extractTMDBParams(req.query);
+
+    const data = await tmdbService.getTrendingMovies(
+      timeWindow,
+      page,
+      additionalParams
+    );
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Error in getTrendingMovies controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch trending movies",
+    });
+  }
+};
+
 module.exports = {
   getPopularMovies,
   getTopRatedMovies,
@@ -173,4 +224,6 @@ module.exports = {
   searchMovies,
   getMovieDetails,
   getGenres,
+  discoverMovies,
+  getTrendingMovies,
 };
