@@ -1,4 +1,5 @@
 const tmdbService = require("../services/tmdbService");
+const streamingService = require("../services/streamingService");
 
 const extractTMDBParams = (query) => {
   const validParams = [
@@ -217,6 +218,61 @@ const getTrendingMovies = async (req, res) => {
   }
 };
 
+// @desc    Get movie streaming sources
+// @route   GET /api/movies/:id/streaming-sources
+// @access  Public
+const getMovieStreamingSources = async (req, res) => {
+  try {
+    const movieId = req.params.id;
+    const sources = await streamingService.getStreamingSources(movieId);
+
+    res.json({
+      success: true,
+      data: sources,
+    });
+  } catch (error) {
+    console.error("Error in getMovieStreamingSources controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to get streaming sources",
+    });
+  }
+};
+
+// @desc    Get movie servers
+// @route   GET /api/movies/:id/servers
+// @access  Public
+const getMovieServers = async (req, res) => {
+  try {
+    const movieId = req.params.id;
+    const sources = await streamingService.getStreamingSources(movieId);
+
+    const servers = [
+      {
+        id: "vidsrc",
+        name: "VidSrc",
+        status: sources.vidsrc ? "online" : "offline",
+      },
+      {
+        id: "vidcloud",
+        name: "VidCloud",
+        status: sources.vidcloud ? "online" : "offline",
+      },
+    ];
+
+    res.json({
+      success: true,
+      data: servers,
+    });
+  } catch (error) {
+    console.error("Error in getMovieServers controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to get server status",
+    });
+  }
+};
+
 module.exports = {
   getPopularMovies,
   getTopRatedMovies,
@@ -226,4 +282,6 @@ module.exports = {
   getGenres,
   discoverMovies,
   getTrendingMovies,
+  getMovieStreamingSources,
+  getMovieServers,
 };
