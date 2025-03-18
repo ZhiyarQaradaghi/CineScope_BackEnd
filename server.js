@@ -15,6 +15,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/movies", require("./routes/movieRoutes"));
 app.use("/api/favorites", require("./routes/favoriteRoutes"));
+app.use("/api/tv", require("./routes/tvRoutes"));
+app.use("/api/search", require("./routes/searchRoutes"));
+app.use("/api/genres", require("./routes/genreRoutes"));
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
