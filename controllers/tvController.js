@@ -1,4 +1,5 @@
 const tvService = require("../services/tvService");
+const tvStreamingService = require("../services/tvStreamingService");
 
 const extractTMDBParams = (query) => {
   const validParams = [
@@ -173,6 +174,62 @@ const getGenres = async (req, res) => {
   }
 };
 
+// @desc    Get TV show streaming sources
+// @route   GET /api/tv/:id/streaming-sources
+// @access  Public
+const getTVShowStreamingSources = async (req, res) => {
+  try {
+    const showId = req.params.id;
+    const season = req.query.season;
+    const episode = req.query.episode;
+
+    const sources = await tvStreamingService.getStreamingSources(
+      showId,
+      season,
+      episode
+    );
+
+    res.json({
+      success: true,
+      data: sources,
+    });
+  } catch (error) {
+    console.error("Error in getTVShowStreamingSources controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to get streaming sources",
+    });
+  }
+};
+
+// @desc    Get TV show servers
+// @route   GET /api/tv/:id/servers
+// @access  Public
+const getTVShowServers = async (req, res) => {
+  try {
+    const showId = req.params.id;
+    const season = req.query.season;
+    const episode = req.query.episode;
+
+    const servers = await tvStreamingService.getTvServers(
+      showId,
+      season,
+      episode
+    );
+
+    res.json({
+      success: true,
+      data: servers,
+    });
+  } catch (error) {
+    console.error("Error in getTVShowServers controller:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to get server status",
+    });
+  }
+};
+
 module.exports = {
   getPopularTVShows,
   getTopRatedTVShows,
@@ -181,4 +238,6 @@ module.exports = {
   getTVShowDetails,
   getTVShowSeason,
   getGenres,
+  getTVShowStreamingSources,
+  getTVShowServers,
 };
