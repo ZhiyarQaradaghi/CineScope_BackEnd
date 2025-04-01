@@ -8,7 +8,12 @@ dotenv.config();
 connectDB();
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://cinescope-kappa.vercel.app", "http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -18,6 +23,7 @@ app.use("/api/favorites", require("./routes/favoriteRoutes"));
 app.use("/api/tv", require("./routes/tvRoutes"));
 app.use("/api/search", require("./routes/searchRoutes"));
 app.use("/api/genres", require("./routes/genreRoutes"));
+app.use("/api/test", require("./routes/testRoutes"));
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Server is running" });
