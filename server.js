@@ -8,7 +8,26 @@ dotenv.config();
 connectDB();
 const app = express();
 
-app.use(cors());
+// CORS configuration
+app.use(
+  cors({
+    origin: [
+      "https://cinescope-kappa.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Origin",
+      "X-Requested-With",
+      "Accept",
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -28,8 +47,30 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to CINESCOPE API" });
 });
 
-// error handler
-app.use(errorHandler);
+// Define a simple error handler if the imported one is not working
+const fallbackErrorHandler = (err, req, res, next) => {
+  console.error(err.stack);
+  const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "An unexpected error occurred",
+    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
+  });
+};
+
+// Use the fallback error handler if errorHandler is not a function
+app.use(
+  typeof errorHandler === "function" ? errorHandler : fallbackErrorHandler
+);
+
+// Add better error logging
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
 
 // server start
 const PORT = process.env.PORT || 5000;
